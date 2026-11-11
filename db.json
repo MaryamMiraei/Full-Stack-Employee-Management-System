@@ -202,5 +202,19 @@
       "createdAt": "2026-11-10T13:22:12.109Z"
     }
   ],
-  "leaves": []
+  "leaves": [],
+  "users": [
+    {
+      "id": "admin-user-id",
+      "email": "admin@example.com",
+      "passwordHash": "$2b$12$kLWPQ98GhS4Jb2PLR1Igl.s/HA1WVslsP07OJ/nCyy/6aUjPRatgu",
+      "role": "admin"
+    },
+    {
+      "id": "employee-user-id",
+      "email": "employee@example.com",
+      "passwordHash": "$2b$12$Oh/XlsezdKSeChmMxjvdZehkNAX4IIy3.nL5Co/LLba8imHZRt.Fm",
+      "role": "employee"
+    }
+  ]
 }
