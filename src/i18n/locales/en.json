@@ -1,0 +1,21 @@
+{
+  "login": {
+    "loginCover": {
+      "title": "Employee Management System",
+      "description": "Streamline your workforce operations, track attendance, manage payroll, and empower your team securely."
+    },
+    "admin": {
+      "buttonTitle": "Back to portal",
+      "title": "Admin Portal",
+      "description": "Sign in to manage the organization",
+      "email": "Email address",
+      "password": "Password",
+      "submit": "Sign in",
+      "submitting": "Signing in ...",
+      "errorEmailRequired": "Entering an email address is required.",
+      "errorEmailValidation": "The email is not valid.",
+      "errorPasswordRequired": "Entering password is required.",
+      "errorPasswordValidation": "The password must be at least 6 characters long."
+    }
+  }
+}

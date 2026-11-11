@@ -1,0 +1,206 @@
+{
+  "employees": [
+    {
+      "allowances": 1000,
+      "basicSalary": 10000,
+      "bio": "",
+      "createdAt": "2026-04-02T06:42:07.670Z",
+      "deductions": 300,
+      "department": "Engineering",
+      "email": "Maryam@gmail.com",
+      "employmentStatus": "ACTIVE",
+      "firstName": "maryam",
+      "id": "69ce0fbfd7c77ea9be93d055",
+      "isDeleted": false,
+      "joinDate": "2026-04-02",
+      "lastName": "Miraei",
+      "phone": "7878787878",
+      "position": "Engineer",
+      "updatedAt": "2026-11-07T08:17:05.128Z",
+      "user": {
+        "email": "tem1@gmail.com",
+        "role": "EMPLOYEE"
+      },
+      "userId": {
+        "_id": "69ce0fbfd7c77ea9be93d053",
+        "email": "tem1@gmail.com",
+        "role": "EMPLOYEE"
+      },
+      "__v": 0,
+      "_id": "69ce0fbfd7c77ea9be93d055"
+    },
+    {
+      "allowances": 1000,
+      "basicSalary": 10000,
+      "bio": "",
+      "createdAt": "2026-04-02T06:42:07.670Z",
+      "deductions": 299.99,
+      "department": "Engineering",
+      "email": "Pegah@gmail.com",
+      "employmentStatus": "ACTIVE",
+      "firstName": "Pegah",
+      "id": "69ce0fbfd7c77ea9be93d05",
+      "isDeleted": false,
+      "joinDate": "2026-04-02",
+      "lastName": "Ashrafi",
+      "phone": "7878787878",
+      "position": "Engineer",
+      "updatedAt": "2026-11-05T11:08:03.664Z",
+      "user": {
+        "email": "tem1@gmail.com",
+        "role": "EMPLOYEE"
+      },
+      "userId": {
+        "_id": "69ce0fbfd7c77ea9be93d053",
+        "email": "tem1@gmail.com",
+        "role": "EMPLOYEE"
+      },
+      "__v": 0,
+      "_id": "69ce0fbfd7c77ea9be93d05"
+    },
+    {
+      "allowances": 500,
+      "basicSalary": 5000,
+      "bio": "",
+      "createdAt": "2026-04-02T06:42:07.670Z",
+      "deductions": 299.99,
+      "department": "Sales",
+      "email": "James@gmail.com",
+      "employmentStatus": "ACTIVE",
+      "firstName": "James",
+      "id": "69ce0fbfd7c77ea9be93d06",
+      "isDeleted": false,
+      "joinDate": "2026-04-02",
+      "lastName": "Thomas",
+      "phone": "7878787878",
+      "position": "Marketing",
+      "updatedAt": "2026-11-05T11:07:08.216Z",
+      "user": {
+        "email": "tem1@gmail.com",
+        "role": "EMPLOYEE"
+      },
+      "userId": {
+        "_id": "69ce0fbfd7c77ea9be93d053",
+        "email": "tem1@gmail.com",
+        "role": "EMPLOYEE"
+      },
+      "__v": 0,
+      "_id": "69ce0fbfd7c77ea9be93d06"
+    },
+    {
+      "allowances": 600,
+      "basicSalary": 6000,
+      "bio": "",
+      "createdAt": "2026-04-02T06:42:07.670Z",
+      "deductions": 299.99,
+      "department": "Marketing",
+      "email": "alex@gmail.com",
+      "employmentStatus": "ACTIVE",
+      "firstName": "Alex",
+      "id": "69ce0fbfd7c77ea9be93d07",
+      "isDeleted": false,
+      "joinDate": "2026-04-02T00:00:00.000Z",
+      "lastName": "Michael",
+      "phone": "7878787878",
+      "position": "Associate Business Support",
+      "updatedAt": "2026-04-02T15:30:43.062Z",
+      "user": {
+        "email": "tem1@gmail.com",
+        "role": "EMPLOYEE"
+      },
+      "userId": {
+        "_id": "69ce0fbfd7c77ea9be93d053",
+        "email": "tem1@gmail.com",
+        "role": "EMPLOYEE"
+      },
+      "__v": 0,
+      "_id": "69ce0fbfd7c77ea9be93d07"
+    },
+    {
+      "allowances": 50,
+      "basicSalary": 5000,
+      "bio": "",
+      "deductions": 5,
+      "department": "",
+      "email": "yans@gmail.com",
+      "employmentStatus": "ACTIVE",
+      "firstName": "Yasna",
+      "joinDate": "2026-11-07",
+      "lastName": "Rostam Bake",
+      "phone": "111111111111111",
+      "position": "Engineer",
+      "id": "788010e3-6b7a-4e79-b4e1-02d73cef8312",
+      "_id": "d3de7a47-9c88-4345-9a8c-5ef2a4622115",
+      "createdAt": "2026-11-07T08:18:54.913Z",
+      "updatedAt": "2026-11-07T08:18:54.913Z",
+      "isDeleted": false,
+      "user": {
+        "email": "yans@gmail.com",
+        "role": "EMPLOYEE"
+      },
+      "userId": {
+        "_id": "317c0e53-538f-49e2-bb1f-fc8a52cac453",
+        "email": "yans@gmail.com",
+        "role": "EMPLOYEE"
+      },
+      "__v": 0
+    }
+  ],
+  "payslips": [
+    {
+      "id": "payslip1",
+      "employeeId": "69ce0fbfd7c77ea9be93d055",
+      "basicSalary": 10000,
+      "allowances": 1000,
+      "deductions": 299.99,
+      "month": 1,
+      "year": 2026,
+      "createdAt": "2026-04-02T11:57:33.681Z",
+      "updatedAt": "2026-04-02T11:57:33.681Z"
+    },
+    {
+      "id": "payslip2",
+      "employeeId": "69ce0fbfd7c77ea9be93d05",
+      "basicSalary": 10000,
+      "allowances": 1000,
+      "deductions": 299.99,
+      "month": 1,
+      "year": 2026,
+      "createdAt": "2026-04-03T11:57:33.681Z",
+      "updatedAt": "2026-04-03T11:57:33.681Z"
+    },
+    {
+      "id": "payslip3",
+      "employeeId": "69ce0fbfd7c77ea9be93d06",
+      "basicSalary": 5000,
+      "allowances": 500,
+      "deductions": 299.99,
+      "month": 1,
+      "year": 2026,
+      "createdAt": "2026-04-04T11:57:33.681Z",
+      "updatedAt": "2026-04-04T11:57:33.681Z"
+    },
+    {
+      "id": "payslip4",
+      "employeeId": "69ce0fbfd7c77ea9be93d07",
+      "basicSalary": 6000,
+      "allowances": 600,
+      "deductions": 299.99,
+      "month": 1,
+      "year": 2026,
+      "createdAt": "2026-04-05T11:57:33.681Z",
+      "updatedAt": "2026-04-05T11:57:33.681Z"
+    },
+    {
+      "id": "447324ca-c9d3-4b64-9ce2-82e16e798e81",
+      "month": 2,
+      "year": 2026,
+      "employeeId": "69ce0fbfd7c77ea9be93d055",
+      "basicSalary": 10100,
+      "allowances": 100,
+      "deductions": 50,
+      "createdAt": "2026-11-10T13:22:12.109Z"
+    }
+  ],
+  "leaves": []
+}
