@@ -4,10 +4,8 @@
       "title": "Employee Management System",
       "description": "Streamline your workforce operations, track attendance, manage payroll, and empower your team securely."
     },
-    "admin": {
+    "share": {
       "buttonTitle": "Back to portal",
-      "title": "Admin Portal",
-      "description": "Sign in to manage the organization",
       "email": "Email address",
       "password": "Password",
       "submit": "Sign in",
@@ -16,6 +14,14 @@
       "errorEmailValidation": "The email is not valid.",
       "errorPasswordRequired": "Entering password is required.",
       "errorPasswordValidation": "The password must be at least 6 characters long."
+    },
+    "admin": {
+      "title": "Admin Portal",
+      "description": "Sign in to manage the organization"
+    },
+    "employee": {
+      "title": "Welcome Back",
+      "description": "Select your portal to securely access the system."
     }
   }
 }

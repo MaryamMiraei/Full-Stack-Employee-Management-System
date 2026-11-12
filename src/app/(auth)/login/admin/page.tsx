@@ -1,9 +1,8 @@
-import React from 'react'
+import LoginForm from "@/features/auth/components/LoginForm";
+import React from "react";
 
 const AdminPage = () => {
-  return (
-    <div>AdminPage</div>
-  )
-}
+  return <LoginForm role="admin" />;
+};
 
-export default AdminPage
+export default AdminPage;

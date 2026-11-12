@@ -1,5 +1,4 @@
 "use client";
-import { logout } from "../../lib/utils/auth";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -126,7 +125,7 @@ const Menu = () => {
     },
   ];
   const handleLogout = () => {
-    logout();
+
     router.replace("/login");
   };
 

@@ -1,9 +1,8 @@
-import React from 'react'
+import LoginForm from "@/features/auth/components/LoginForm";
+import React from "react";
 
 const EmployeePage = () => {
-  return (
-    <div>EmployeePage</div>
-  )
-}
+  return <LoginForm role="employee" />;
+};
 
-export default EmployeePage
+export default EmployeePage;
