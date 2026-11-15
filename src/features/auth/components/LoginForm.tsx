@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "next/navigation";
@@ -12,8 +12,8 @@ import useLogin from "../hooks/useLogin";
 import LanguageSwitcher from "@/components/shared/LanguageSwitcher";
 import i18n from "@/i18n";
 import Link from "next/link";
-
-type UserRole = "admin" | "employee";
+import { useAuth } from "@/contexts/hooks/useAuth";
+import { toast } from "react-toastify";
 
 interface ILoginFormProps {
   role: UserRole;
@@ -25,6 +25,17 @@ const LoginForm = ({ role }: ILoginFormProps) => {
   const { t } = useTranslation();
   const router = useRouter();
 
+
+  useEffect(() => {
+    const sessionExpired = sessionStorage.getItem("session-expired");
+
+    if (sessionExpired) {
+      toast.warning("Your session has expired. Please log in again.");
+
+      sessionStorage.removeItem("session-expired");
+    }
+  }, []);
+
   const { mutate: login, isPending, isError, error } = useLogin();
   const {
     register,
@@ -32,11 +43,15 @@ const LoginForm = ({ role }: ILoginFormProps) => {
     formState: { errors },
   } = useForm<ILoginRequest>();
 
+  const { refreshSession } = useAuth();
+
   const handleLogin = (data: ILoginRequest) => {
     login(
       { ...data, role_type: `${role}` },
       {
-        onSuccess: (response) => {
+        onSuccess: async (response) => {
+          await refreshSession();
+
           if (response.user.role === "admin") {
             router.replace("/admin/dashboard");
           } else {

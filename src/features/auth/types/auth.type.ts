@@ -1,3 +1,10 @@
+type UserRole = "admin" | "employee";
+
+interface IUser {
+  id: string;
+  role: UserRole;
+}
+
 interface ILoginFormData {
   email: string;
   password: string;
@@ -11,17 +18,9 @@ interface ILoginRequest {
 
 interface ILoginResponse {
   message: string;
-  user: {
-    id: string;
-    role: "admin" | "employee";
-  };
+  user: IUser;
 }
 
-export type UserRole = "admin" | "employee";
-
-export interface ISessionResponse {
-  user: {
-    id: string;
-    role: UserRole;
-  };
+interface ISessionResponse {
+  user: IUser;
 }

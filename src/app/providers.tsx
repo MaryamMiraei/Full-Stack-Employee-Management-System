@@ -6,14 +6,15 @@ import { I18nextProvider } from "react-i18next";
 import i18n from "@/i18n";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { AuthProvider } from "@/contexts/AuthContexts";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   const [client] = useState(() => new QueryClient());
   return (
     <I18nextProvider i18n={i18n}>
       <QueryClientProvider client={client}>
-        {children}
-        <ToastContainer position="top-right" autoClose={3000} />;
+        <AuthProvider>{children}</AuthProvider>
+        <ToastContainer position="top-right" autoClose={3000} />
       </QueryClientProvider>
     </I18nextProvider>
   );
