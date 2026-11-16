@@ -22,7 +22,7 @@ export const generateToken = async ({ userId, role }: ITokenPayload) => {
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(userId)
     .setIssuedAt()
-    .setExpirationTime(process.env.JWT_EXPIRES_IN || "1h")
+    .setExpirationTime(process.env.JWT_EXPIRES_IN || "24h")
     .setJti(crypto.randomUUID())
     .sign(secretKey);
 
