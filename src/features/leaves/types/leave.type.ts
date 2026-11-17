@@ -1,4 +1,6 @@
-export type LeaveType = "ANNUAL" | "SICK" | "UNPAID" | "PERSONAL";
+import type { IEmployee } from "@/features/employees/types/employee.type";
+
+export type LeaveType = "ANNUAL" | "SICK" | "UNPAID" | "CASUAL";
 export type LeaveStatus = "PENDING" | "APPROVED" | "REJECTED";
 
 export interface ILeave {
@@ -40,6 +42,19 @@ export interface ILeaveSummary {
     ANNUAL: number;
     SICK: number;
     UNPAID: number;
-    PERSONAL: number;
+    CASUAL: number;
   };
+}
+
+
+export type ILeaveWithEmployee = ILeave & {
+  employee: Pick<
+    IEmployee,
+    "id" | "firstName" | "lastName" | "email" | "department" | "position"
+  > | null;
+};
+
+export interface IUpdateLeaveStatusRequest {
+  status: "APPROVED" | "REJECTED";
+  adminComment?: string;
 }

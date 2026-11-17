@@ -21,3 +21,19 @@ export const formatCurrency = (value: number) =>
     style: "currency",
     currency: "USD",
   }).format(value);
+
+export const formatText = (value: string) =>
+  value.toLowerCase().replace(/\b\w/g, (char) => char.toUpperCase());
+
+
+import type { LeaveStatus } from "@/features/leaves/types/leave.type";
+
+export const getLeaveStatusStyle = (status: LeaveStatus) => {
+  const styles: Record<LeaveStatus, string> = {
+    PENDING: "bg-yellow-100 text-yellow-700",
+    APPROVED: "bg-green-100 text-green-700",
+    REJECTED: "bg-red-100 text-red-700",
+  };
+
+  return styles[status];
+};

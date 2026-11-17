@@ -19,25 +19,25 @@ const LeaveEmployeeCards = () => {
       id: "annual",
       title: "Annual Leave",
       days: summary.byType.ANNUAL,
-      icon: <TreePalm/>
+      icon: <TreePalm />,
     },
     {
       id: "sick",
       title: "Sick Leave",
       days: summary.byType.SICK,
-      icon: <Thermometer/>
+      icon: <Thermometer />,
     },
     {
       id: "unpaid",
       title: "Unpaid Leave",
       days: summary.byType.UNPAID,
-      icon: <DollarSign/>
+      icon: <DollarSign />,
     },
     {
-      id: "personal",
-      title: "Personal Leave",
-      days: summary.byType.PERSONAL,
-      icon: <Umbrella/>
+      id: "casual",
+      title: "Casual Leave",
+      days: summary.byType.CASUAL,
+      icon: <Umbrella />,
     },
   ];
 

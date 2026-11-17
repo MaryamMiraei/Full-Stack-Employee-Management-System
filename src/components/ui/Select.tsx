@@ -6,6 +6,7 @@ export interface SelectOption {
 }
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+  icon?: React.ReactNode;
   label?: string;
   error?: string;
   options: SelectOption[];
@@ -14,6 +15,7 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 const Select = ({
+  icon,
   label,
   error,
   id,
@@ -26,12 +28,17 @@ const Select = ({
   return (
     <div className="flex w-full flex-col">
       {label && (
-        <label
-          htmlFor={id}
-          className="mb-2 block text-sm font-medium text-slate-700"
-        >
-          {label}
-        </label>
+        <div className="flex gap-2 items-center mb-2">
+          <div className="text-slate-400">{icon}</div>
+          <div>
+            <label
+              htmlFor={id}
+              className=" block text-sm font-medium text-slate-700"
+            >
+              {label}
+            </label>
+          </div>
+        </div>
       )}
 
       <select

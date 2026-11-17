@@ -121,7 +121,7 @@ export const GET = async (request: Request) => {
         ANNUAL: 0,
         SICK: 0,
         UNPAID: 0,
-        PERSONAL: 0,
+        CASUAL: 0,
       },
     };
 

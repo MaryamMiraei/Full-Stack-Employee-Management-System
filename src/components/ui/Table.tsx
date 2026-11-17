@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 export interface IColumn<T> {
   key: string;
   title: string;
-  className?:string;
+  className?: string;
   render?: (row: T) => ReactNode;
 }
 
@@ -14,12 +14,7 @@ interface ITableProps<T> {
   emptyMessage?: string;
 }
 
-function Table<T>({
-  columns,
-  data,
-  rowKey,
-  emptyMessage,
-}: ITableProps<T>) {
+const Table = <T,>({ columns, data, rowKey, emptyMessage }: ITableProps<T>) => {
   return (
     <div className="overflow-hidden rounded-xl border border-slate-300">
       <div className="overflow-x-auto">
@@ -40,7 +35,7 @@ function Table<T>({
                 <tr key={String(row[rowKey])} className="hover:bg-slate-200">
                   {columns.map((column) => (
                     <td
-                      key={String(column.key)}
+                      key={column.key}
                       className={`px-6 py-4 text-center ${column.className ?? ""}`}
                     >
                       {column.render
@@ -65,6 +60,6 @@ function Table<T>({
       </div>
     </div>
   );
-}
+};
 
 export default Table;

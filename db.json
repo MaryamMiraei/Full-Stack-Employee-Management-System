@@ -21,7 +21,6 @@
     }
   ],
   "payslips": [
-
     {
       "id": "a36fe856-c7e8-43f2-be7b-cfbfaf556690",
       "employeeId": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",
@@ -34,7 +33,61 @@
       "updatedAt": "2026-11-15T10:39:43.056Z"
     }
   ],
-  "leaves": [],
+  "leaves": [
+    {
+      "id": "b0823157-79e7-4f82-b0d9-24e99a8e1e5a",
+      "employeeId": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",
+      "type": "CASUAL",
+      "startDate": "2026-11-04",
+      "endDate": "2026-11-07",
+      "reason": "سالگرد ازدواج",
+      "status": "APPROVED",
+      "createdAt": "2026-11-17T12:46:12.343Z",
+      "updatedAt": "2026-11-17T13:51:32.876Z",
+      "adminComment": "",
+      "reviewedBy": "admin-user-id",
+      "reviewedAt": "2026-11-17T13:51:32.876Z"
+    },
+    {
+      "id": "91cd3f9a-8d52-47df-afe2-c1b300241cf7",
+      "employeeId": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",
+      "type": "ANNUAL",
+      "startDate": "2026-11-17",
+      "endDate": "2026-11-21",
+      "reason": "تعطیلات نوروز",
+      "status": "APPROVED",
+      "createdAt": "2026-11-17T14:05:06.395Z",
+      "updatedAt": "2026-11-17T14:07:03.199Z",
+      "adminComment": "",
+      "reviewedBy": "admin-user-id",
+      "reviewedAt": "2026-11-17T14:07:03.199Z"
+    },
+    {
+      "id": "4162a227-602b-4325-9bf9-c564fa6a47d2",
+      "employeeId": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",
+      "type": "UNPAID",
+      "startDate": "2026-11-30",
+      "endDate": "2027-01-01",
+      "reason": "نیاز به استراحت",
+      "status": "REJECTED",
+      "createdAt": "2026-11-17T14:05:59.103Z",
+      "updatedAt": "2026-11-17T14:07:13.587Z",
+      "adminComment": "",
+      "reviewedBy": "admin-user-id",
+      "reviewedAt": "2026-11-17T14:07:13.587Z"
+    },
+    {
+      "id": "99d7d8f0-73e3-4d8f-be00-2d750f017686",
+      "employeeId": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",
+      "type": "CASUAL",
+      "startDate": "2026-11-01",
+      "endDate": "2026-11-04",
+      "reason": "تور کویر",
+      "status": "PENDING",
+      "createdAt": "2026-11-17T14:23:29.627Z",
+      "updatedAt": "2026-11-17T14:23:29.627Z"
+    }
+  ],
   "users": [
     {
       "id": "admin-user-id",
