@@ -17,6 +17,8 @@ interface IUser {
   email: string;
   passwordHash: string;
   role: "admin" | "employee";
+  profileImage: string | null;
+  avatarFileName: string | null;
 }
 
 export const POST = async (request: Request) => {

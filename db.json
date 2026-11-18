@@ -16,7 +16,26 @@
       "bio": "",
       "userId": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",
       "createdAt": "2026-11-14T09:00:00.000Z",
-      "updatedAt": "2026-11-15T09:03:57.844Z",
+      "updatedAt": "2026-11-18T13:40:10.133Z",
+      "isDeleted": false
+    },
+    {
+      "id": "7e910ee4-468c-474b-ba2a-5e73d088ace4",
+      "userId": "70707207-fe63-4c24-b712-89e4e1ca677a",
+      "firstName": "Pegah",
+      "lastName": "Ashrafi",
+      "email": "pegah@gmail.com",
+      "phone": "09123456789",
+      "department": "Engineering",
+      "position": "Engineer",
+      "joinDate": "2026-11-18",
+      "employmentStatus": "ACTIVE",
+      "basicSalary": 10000,
+      "allowances": 500,
+      "deductions": 37,
+      "bio": "Web developer",
+      "createdAt": "2026-11-18T11:11:53.419Z",
+      "updatedAt": "2026-11-18T11:11:53.419Z",
       "isDeleted": false
     }
   ],
@@ -42,6 +61,17 @@
       "year": 2026,
       "createdAt": "2026-11-18T08:12:04.989Z",
       "updatedAt": "2026-11-18T08:12:04.989Z"
+    },
+    {
+      "id": "dbcc9aeb-b495-4589-8fc7-2af510c43c66",
+      "employeeId": "7e910ee4-468c-474b-ba2a-5e73d088ace4",
+      "basicSalary": 10000,
+      "allowances": 500,
+      "deductions": 37,
+      "month": 11,
+      "year": 2026,
+      "createdAt": "2026-11-18T11:12:32.164Z",
+      "updatedAt": "2026-11-18T11:12:32.164Z"
     }
   ],
   "leaves": [
@@ -97,6 +127,17 @@
       "status": "PENDING",
       "createdAt": "2026-11-17T14:23:29.627Z",
       "updatedAt": "2026-11-17T14:23:29.627Z"
+    },
+    {
+      "id": "388a68ac-8362-4473-afac-2d7e515bffaa",
+      "employeeId": "70707207-fe63-4c24-b712-89e4e1ca677a",
+      "type": "CASUAL",
+      "startDate": "2026-11-19",
+      "endDate": "2026-11-20",
+      "reason": "سالگرد ازدواج سفر به کاشان",
+      "status": "PENDING",
+      "createdAt": "2026-11-18T11:14:33.644Z",
+      "updatedAt": "2026-11-18T11:14:33.644Z"
     }
   ],
   "users": [
@@ -104,13 +145,25 @@
       "id": "admin-user-id",
       "email": "admin@example.com",
       "passwordHash": "$2b$12$kLWPQ98GhS4Jb2PLR1Igl.s/HA1WVslsP07OJ/nCyy/6aUjPRatgu",
-      "role": "admin"
+      "role": "admin",
+      "profileImage": null,
+      "avatarFileName": null
     },
     {
       "id": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",
       "email": "maryam@example.com",
       "passwordHash": "$2b$12$Oh/XlsezdKSeChmMxjvdZehkNAX4IIy3.nL5Co/LLba8imHZRt.Fm",
-      "role": "employee"
+      "role": "employee",
+      "profileImage": "/api/profile/avatar?v=1795015060724",
+      "avatarFileName": "d485d926-1d49-46e5-a9cd-319a433b7292.png"
+    },
+    {
+      "id": "70707207-fe63-4c24-b712-89e4e1ca677a",
+      "email": "pegah@gmail.com",
+      "passwordHash": "$2b$10$YnlHxu0SK7dJswRCCunGYO/bxKQOtu.KAFdDaMd2mxqP/8begSK8u",
+      "role": "employee",
+      "profileImage": null,
+      "avatarFileName": null
     }
   ]
 }

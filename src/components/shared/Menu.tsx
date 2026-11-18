@@ -2,6 +2,9 @@
 import { navItem } from "@/constants/navItem";
 import { useAuth } from "@/contexts/hooks/useAuth";
 import { logoutUser } from "@/features/auth/api/logout";
+import { useGetProfile } from "@/features/profile/hooks/useGetProfile";
+import { getInitials } from "@/lib/utils/AUXFunctions";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -13,6 +16,12 @@ const Menu = () => {
   const router = useRouter();
 
   const { user, isLoading } = useAuth();
+
+  const {
+    data: profile,
+    isLoading: isProfileLoading,
+    isError,
+  } = useGetProfile();
 
   if (isLoading || !user) return null;
 
@@ -121,15 +130,31 @@ const Menu = () => {
         {/* Profile info */}
         <div className="mx-3 mt-4 mb-1 p-3 rounded-lg bg-white/3 border border-white/4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center ring-1 ring-white/10 shrink-0">
-              <span className="text-slate-400 text-xs font-semibold">A</span>
+            <div className="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center ring-1 ring-white/10 shrink-0 overflow-hidden">
+              {profile?.profileImage ? (
+                <div className="relative w-full h-full">
+                  <Image
+                    src={profile.profileImage}
+                    alt="User avatar"
+                    fill
+                    sizes="36px"
+                    className="object-cover"
+                    unoptimized
+                  />
+                </div>
+              ) : (
+                <span className="text-slate-400 text-xs font-semibold">
+                  {getInitials(`${profile?.firstName} ${profile?.lastName}`)}
+                </span>
+              )}
             </div>
+
             <div className="min-w-0">
               <p className="text-[13px] font-medium text-slate-200 truncate">
-                Admin
+                {`${profile?.firstName} ${profile?.lastName}`}
               </p>
               <p className="text-[11px] text-slate-500 truncate">
-                Administrator
+                {profile?.role === "admin" ? "Administrator" : "Employee"}
               </p>
             </div>
           </div>

@@ -1,3 +1,4 @@
+import { User } from "lucide-react";
 import type { ReactNode } from "react";
 
 export interface INavItem {
@@ -169,6 +170,15 @@ export const navItem: INavItem[] = [
         <circle cx="12" cy="12" r="3"></circle>
       </svg>
     ),
+    allowedRoles: ["admin", "employee"],
+  },
+  {
+    label: "My Profile",
+    href: {
+      admin: "/profile",
+      employee: "/profile",
+    },
+    icon: <User />,
     allowedRoles: ["admin", "employee"],
   },
 ];
