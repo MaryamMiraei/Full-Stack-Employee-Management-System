@@ -5,7 +5,7 @@ export const createPayslip = async (
   data: ICreatePayslipRequest,
 ): Promise<IPayslipResponse> => {
   const response = await clientApi.post<IPayslipResponse>(
-    "/api/admin/payslips",
+    "/api/payslips",
     data,
   );
 

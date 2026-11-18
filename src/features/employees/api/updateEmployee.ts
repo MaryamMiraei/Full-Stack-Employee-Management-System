@@ -7,7 +7,7 @@ interface IUpdateEmployeeParams {
 }
 
 export const updateEmployee = async ({ id, data }: IUpdateEmployeeParams) => {
-  const response = await clientApi.patch(`/api/admin/employees/${id}`, data);
+  const response = await clientApi.patch(`/api/employees/${id}`, data);
 
   return response.data;
 };

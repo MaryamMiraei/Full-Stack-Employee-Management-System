@@ -6,7 +6,7 @@ export const getPayslip = async (
   payslipID: string,
 ): Promise<IPayslipResponse> => {
   const response = await clientApi.get<IPayslipResponse>(
-    `/api/admin/payslips/${payslipID}`,
+    `/api/payslips/${payslipID}`,
   );
 
   return response.data;

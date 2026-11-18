@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useForm } from "react-hook-form";
@@ -9,11 +8,10 @@ import Select, { type SelectOption } from "@/components/ui/Select";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 
-import { months } from "@/data/months";
+import { months } from "@/constants/months";
 import type { ICreatePayslipRequest } from "../types/payslips.type";
 import { useCreatePayslip } from "../hooks/useCreatePayslip";
 import { useGetEmployees } from "@/features/employees/hooks/useGetEmployees";
-
 
 interface IPayslipsModal {
   close: () => void;
@@ -41,10 +39,7 @@ const AdminPayslipsModal = ({ close }: IPayslipsModal) => {
   } = useGetEmployees();
 
   // Create payslip
-  const {
-    mutate: createPayslip,
-    isPending: isCreating,
-  } = useCreatePayslip();
+  const { mutate: createPayslip, isPending: isCreating } = useCreatePayslip();
 
   const onSubmit = (data: ICreatePayslipRequest) => {
     createPayslip(data, {
@@ -78,10 +73,7 @@ const AdminPayslipsModal = ({ close }: IPayslipsModal) => {
       description=""
       close={close}
     >
-      <form
-        className="flex flex-col gap-3"
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <form className="flex flex-col gap-3" onSubmit={handleSubmit(onSubmit)}>
         <Select
           options={employeeOptions}
           label="Employee"

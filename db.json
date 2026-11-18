@@ -14,7 +14,7 @@
       "allowances": 1000,
       "deductions": 300,
       "bio": "",
-      "userId": "user-123",
+      "userId": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",
       "createdAt": "2026-11-14T09:00:00.000Z",
       "updatedAt": "2026-11-15T09:03:57.844Z",
       "isDeleted": false
@@ -31,6 +31,17 @@
       "year": 2026,
       "createdAt": "2026-11-15T10:39:43.056Z",
       "updatedAt": "2026-11-15T10:39:43.056Z"
+    },
+    {
+      "id": "28780d7c-6aa9-4fba-b0da-3fdf4e13e3c4",
+      "employeeId": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",
+      "basicSalary": 10000,
+      "allowances": 450,
+      "deductions": 50,
+      "month": 5,
+      "year": 2026,
+      "createdAt": "2026-11-18T08:12:04.989Z",
+      "updatedAt": "2026-11-18T08:12:04.989Z"
     }
   ],
   "leaves": [

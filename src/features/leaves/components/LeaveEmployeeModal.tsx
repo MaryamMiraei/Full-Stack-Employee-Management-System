@@ -6,7 +6,7 @@ import Modal from "@/components/ui/Modal";
 import Select from "@/components/ui/Select";
 import Textarea from "@/components/ui/TextArea";
 
-import { LeaveOptions } from "@/data/LeaveOpions";
+import { LeaveOptions } from "@/constants/LeaveOpions";
 import { useCreateLeave } from "@/features/leaves/hooks/useCreateLeave";
 import type { ICreateLeaveRequest } from "@/features/leaves/types/leave.type";
 import { CalendarDays, FileTextIcon } from "lucide-react";

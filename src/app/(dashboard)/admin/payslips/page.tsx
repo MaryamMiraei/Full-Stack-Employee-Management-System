@@ -8,16 +8,14 @@ import Table, { type IColumn } from "@/components/ui/Table";
 
 import AdminPayslipsModal from "@/features/payslips/components/PayslipsModal";
 
-import { months } from "@/data/months";
+import { months } from "@/constants/months";
 import { formatCurrency } from "@/lib/utils/AUXFunctions";
 import { usePayslips } from "@/features/payslips/hooks/useGetPayslips";
 import type { IPayslipResponse } from "@/features/payslips/types/payslips.type";
 
-
 const AdminPayslipsPage = () => {
   const [addFormModal, setAddFormModal] = useState(false);
 
-  // Get all payslips
   const { data: payslips = [], isPending, isError } = usePayslips();
 
   const columns: IColumn<IPayslipResponse>[] = [

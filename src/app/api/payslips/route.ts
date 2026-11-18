@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+
 
 import { serverApi } from "@/lib/api/serverApi";
-import { verifyToken } from "@/lib/auth/token";
 
 import type {
   IPayslip,
@@ -10,78 +9,72 @@ import type {
   ICreatePayslipRequest,
   IPayslipResponse,
 } from "@/features/payslips/types/payslips.type";
+import { getCurrentUser } from "@/lib/auth/auth";
 
 interface IEmployeeSource extends IPayslipEmployee {
   basicSalary: number;
   allowances: number;
   deductions: number;
   isDeleted: boolean;
-}
-
-interface IUserSession {
   userId: string;
-  role: "admin" | "employee";
 }
 
-const getSession = async (): Promise<IUserSession | null> => {
-  try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("access_token")?.value;
-
-    if (!token) return null;
-
-    const session = await verifyToken(token);
-
-    if (!session) return null;
-
-    return session as IUserSession;
-  } catch {
-    return null;
-  }
-};
-
-// GET: دریافت تمام فیش‌های حقوقی
 export const GET = async () => {
   try {
-    const session = await getSession();
+    const user = await getCurrentUser();
 
-    if (!session) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
-    if (session.role !== "admin") {
-      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
-    }
-
-    const [payslipsResponse, employeesResponse] = await Promise.all([
-      serverApi.get<IPayslip[]>("/payslips"),
-      serverApi.get<IEmployeeSource[]>("/employees"),
-    ]);
-
-    const payslips = payslipsResponse.data;
-    const employees = employeesResponse.data;
-
-    const result: IPayslipResponse[] = payslips.map((payslip) => {
-      const employee = employees.find(
-        (item) => item.id === payslip.employeeId && !item.isDeleted,
+    if (!user) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
       );
+    }
 
-      return {
-        ...payslip,
-        employee: employee
-          ? {
-              id: employee.id,
-              firstName: employee.firstName,
-              lastName: employee.lastName,
-              email: employee.email,
-              department: employee.department,
-              position: employee.position,
-            }
-          : null,
-        netSalary:
-          payslip.basicSalary + payslip.allowances - payslip.deductions,
-      };
-    });
+    const { data: payslips } =
+      await serverApi.get<IPayslip[]>("/payslips");
+
+    const { data: employees } =
+      await serverApi.get<IEmployeeSource[]>("/employees");
+
+    // فیلتر کردن فیش‌ها برای کارمند
+    const filteredPayslips =
+      user.role === "admin"
+        ? payslips
+        : payslips.filter((payslip) => {
+            const employee = employees.find(
+              (item) => item.id === payslip.employeeId
+            );
+
+            return employee?.userId === user.userId;
+          });
+
+    // اضافه کردن اطلاعات کارمند و محاسبه حقوق خالص
+    const result: IPayslipResponse[] = filteredPayslips.map(
+      (payslip) => {
+        const employee = employees.find(
+          (item) =>
+            item.id === payslip.employeeId && !item.isDeleted
+        );
+
+        return {
+          ...payslip,
+          employee: employee
+            ? {
+                id: employee.id,
+                firstName: employee.firstName,
+                lastName: employee.lastName,
+                email: employee.email,
+                department: employee.department,
+                position: employee.position,
+              }
+            : null,
+          netSalary:
+            payslip.basicSalary +
+            payslip.allowances -
+            payslip.deductions,
+        };
+      }
+    );
 
     return NextResponse.json(result, { status: 200 });
   } catch (error) {
@@ -89,21 +82,20 @@ export const GET = async () => {
 
     return NextResponse.json(
       { message: "Failed to get payslips" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 };
-
 // POST: ایجاد فیش حقوقی جدید
 export const POST = async (request: Request) => {
   try {
-    const session = await getSession();
+    const user = await getCurrentUser();
 
-    if (!session) {
+    if (!user) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (session.role !== "admin") {
+    if (user.role !== "admin") {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
@@ -135,10 +127,10 @@ export const POST = async (request: Request) => {
     }
 
     // بررسی وجود کارمند
-    const employeesResponse =
+    const { data: employees } =
       await serverApi.get<IEmployeeSource[]>("/employees");
 
-    const employee = employeesResponse.data.find(
+    const employee = employees.find(
       (item) => item.id === employeeId && !item.isDeleted,
     );
 
@@ -164,10 +156,11 @@ export const POST = async (request: Request) => {
       updatedAt: now,
     };
 
-    // ذخیره در دیتابیس
-    const response = await serverApi.post<IPayslip>("/payslips", newPayslip);
-
-    const savedPayslip = response.data;
+    // ذخیره فیش حقوقی
+    const { data: savedPayslip } = await serverApi.post<IPayslip>(
+      "/payslips",
+      newPayslip,
+    );
 
     // آماده‌سازی پاسخ همراه اطلاعات کارمند
     const result: IPayslipResponse = {
