@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Camera, X } from "lucide-react";
 
+import Button from "@/components/ui/Button";
+
 interface IProfileAvatarProps {
   firstName: string;
   lastName: string;
@@ -40,7 +42,6 @@ const ProfileAvatar = ({
     }
 
     const objectUrl = URL.createObjectURL(selectedFile);
-
     setPreviewUrl(objectUrl);
 
     return () => {
@@ -96,7 +97,7 @@ const ProfileAvatar = ({
     <div className="flex flex-col items-center gap-3">
       <div className="relative">
         <div
-          className={`${sizeClasses[size]} overflow-hidden rounded-full bg-red-900 flex items-center justify-center text-white font-semibold`}
+          className={`${sizeClasses[size]} overflow-hidden rounded-full bg-indigo-900 flex items-center justify-center text-white font-semibold`}
         >
           {imageSource ? (
             <img
@@ -112,7 +113,7 @@ const ProfileAvatar = ({
         <button
           type="button"
           onClick={handleOpenFilePicker}
-          className="absolute bottom-0 right-0 rounded-full bg-red-800 p-2 text-white hover:bg-red-900"
+          className="absolute bottom-0 right-0 rounded-full bg-indigo-500 p-2 text-white hover:bg-indigo-600"
           aria-label="Choose profile image"
         >
           <Camera size={16} />
@@ -128,23 +129,19 @@ const ProfileAvatar = ({
       />
 
       <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={handleOpenFilePicker}
-          className="text-sm text-red-600 hover:underline"
-        >
+        <Button type="button" onClick={handleOpenFilePicker}>
           Change photo
-        </button>
+        </Button>
 
         {selectedFile && (
-          <button
+          <Button
             type="button"
+            variant="secondary"
             onClick={handleRemoveSelection}
-            className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-600"
           >
             <X size={14} />
             Cancel
-          </button>
+          </Button>
         )}
       </div>
 

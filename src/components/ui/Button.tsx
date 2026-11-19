@@ -3,6 +3,7 @@ import type { ButtonHTMLAttributes } from "react";
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "danger";
   fullWidth?: boolean;
+  icon?: React.ReactNode;
 }
 
 const Button = ({
@@ -11,11 +12,13 @@ const Button = ({
   fullWidth = false,
   className = "",
   type,
+  icon,
   ...props
 }: ButtonProps) => {
   const variants = {
     primary: "text-white bg-indigo-500 hover:bg-indigo-600",
-    secondary: "bg-slate-200 text-slate-700 hover:bg-slate-300 border border-slate-400",
+    secondary:
+      "bg-slate-200 text-slate-700 hover:bg-slate-300 border border-slate-400",
     danger: "bg-red-600 text-white hover:bg-red-700",
   };
 
@@ -30,7 +33,10 @@ const Button = ({
       `}
       {...props}
     >
-      {children}
+      <div className="flex items-center gap-2">
+        <div>{icon}</div>
+        <p>{children}</p>
+      </div>
     </button>
   );
 };

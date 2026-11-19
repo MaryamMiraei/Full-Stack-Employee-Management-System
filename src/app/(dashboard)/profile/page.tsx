@@ -8,6 +8,7 @@ import EmploymentInfo from "@/features/profile/components/EmploymentInfo";
 import { useState } from "react";
 import { useUploadAvatar } from "@/features/profile/hooks/useUploadAvatar";
 import Button from "@/components/ui/Button";
+import ChangePasswordForm from "@/features/profile/components/ChangePasswordForm";
 
 const ProfilePage = () => {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
@@ -44,7 +45,7 @@ const ProfilePage = () => {
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div>
+      <div className="ml-15 lg:ml-0 mb-8">
         <h1 className="text-2xl font-bold">My Profile</h1>
         <p className="text-sm text-gray-500 mt-1">
           Manage your personal information and account details.
@@ -82,6 +83,8 @@ const ProfilePage = () => {
           </p>
         </div>
       )}
+
+      <ChangePasswordForm/>
     </div>
   );
 };

@@ -87,7 +87,7 @@ const EmployeePage = () => {
   }
 
   return (
-    <div className="p-5">
+    <div>
       <header className="mb-8 ml-15 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center lg:ml-0">
         <div>
           <h1 className="text-xl font-bold">Employees</h1>

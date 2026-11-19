@@ -26,7 +26,7 @@ const ProfileHeader = ({ profile, onAvatarChange }: IProfileHeaderProps) => {
 
         <p className="text-sm text-gray-500">{profile.email}</p>
 
-        <span className="inline-block rounded-full bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 px-3 py-1 text-xs">
+        <span className="inline-block rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 px-3 py-1 text-xs">
           {profile.role === "admin" ? "Administrator" : "Employee"}
         </span>
       </div>

@@ -152,7 +152,7 @@
     {
       "id": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",
       "email": "maryam@example.com",
-      "passwordHash": "$2b$12$Oh/XlsezdKSeChmMxjvdZehkNAX4IIy3.nL5Co/LLba8imHZRt.Fm",
+      "passwordHash": "$2b$10$wWz2hTEXsWwe2amgHxGtAet3x2kuCzDWfme0EUGDC8ZDbe/SImVI.",
       "role": "employee",
       "profileImage": "/api/profile/avatar?v=1795015060724",
       "avatarFileName": "d485d926-1d49-46e5-a9cd-319a433b7292.png"

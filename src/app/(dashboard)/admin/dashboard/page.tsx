@@ -1,8 +1,7 @@
-import React from "react";
 
 const AdminDashboardPage = () => {
   return (
-    <div className="p-5 ">
+    <div>
       <header className="ml-15 lg:ml-0 mb-8">
         <h1 className="font-bold text-xl">Dashboard</h1>
         <p className="text-gray-500 text-sm">

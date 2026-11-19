@@ -10,14 +10,13 @@ const EmployeeLeavePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="p-5">
+    <div>
       <header className="mb-8 ml-15 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center lg:ml-0">
         <div>
           <h1 className="font-bold text-xl">Leave Management</h1>
           <p className="text-gray-500 text-sm">Manage leave applications</p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)}>
-          <Plus size={16} />
+        <Button onClick={() => setIsModalOpen(true)} icon={<Plus size={16} />}>
           Apply for leave
         </Button>
       </header>

@@ -5,7 +5,7 @@ import Textarea from "@/components/ui/TextArea";
 
 const AdminSettingsPage = () => {
   return (
-    <div className="p-5 sm:p-6 mb-6 bg-slate-100">
+    <div className="sm:p-6 mb-6 bg-slate-100">
       <header className="ml-15 lg:ml-0 mb-8">
         <div>
           <h1 className="font-bold text-xl">Settings</h1>

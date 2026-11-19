@@ -2,7 +2,7 @@ import PayslipEmployeeTable from "@/features/payslips/components/PayslipEmployee
 
 const PayslipEmployeePage = () => {
   return (
-    <div className="p-5">
+    <div>
       <header className="ml-15 lg:ml-0 mb-8 flex flex-col gap-4">
         <h1 className="font-bold text-xl">Payslips</h1>
         <p className="text-gray-500 text-sm">

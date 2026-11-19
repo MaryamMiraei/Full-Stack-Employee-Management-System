@@ -92,7 +92,7 @@ const AdminPayslipsPage = () => {
   }
 
   return (
-    <div className="p-5">
+    <div>
       <header className="ml-15 lg:ml-0 mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="font-bold text-xl">Payslips</h1>
