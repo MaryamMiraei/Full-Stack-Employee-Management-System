@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { serverApi } from "@/lib/api/serverApi";
 import { getCurrentUser } from "@/lib/auth/auth";
 
@@ -10,6 +11,7 @@ import type {
 
 import type { IEmployee } from "@/features/employees/types/employee.type";
 
+// GET: Get all leaves with employee information
 export const GET = async () => {
   try {
     const user = await getCurrentUser();
@@ -18,25 +20,34 @@ export const GET = async () => {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch leaves and employees simultaneously
     const [leavesResponse, employeesResponse] = await Promise.all([
       serverApi.get<ILeave[]>("/leaves"),
       serverApi.get<IEmployee[]>("/employees"),
     ]);
 
     const leaves = leavesResponse.data;
-    const employees = employeesResponse.data;
+
+    const employees = employeesResponse.data.filter(
+      (employee) => !employee.isDeleted,
+    );
 
     // Filter leaves based on user role
     const filteredLeaves =
       user.role === "admin"
         ? leaves
-        : leaves.filter((leave) => leave.employeeId === user.userId);
+        : leaves.filter((leave) =>
+            employees.some(
+              (employee) =>
+                employee.userId === user.userId &&
+                (leave.employeeId === employee.id ||
+                  leave.employeeId === employee.userId),
+            ),
+          );
 
     // Populate employee information
     const populatedLeaves = filteredLeaves.map((leave) => {
       const employee = employees.find(
-        (emp) => emp.id === leave.employeeId && !emp.isDeleted,
+        (emp) => emp.id === leave.employeeId || emp.userId === leave.employeeId,
       );
 
       return {
@@ -54,7 +65,12 @@ export const GET = async () => {
       };
     });
 
-    return NextResponse.json(populatedLeaves, { status: 200 });
+    return NextResponse.json(populatedLeaves, {
+      status: 200,
+      headers: {
+        "Cache-Control": "private, no-store",
+      },
+    });
   } catch (error) {
     console.error("Get leaves error:", error);
 
@@ -65,6 +81,7 @@ export const GET = async () => {
   }
 };
 
+// POST: Create a new leave request
 export const POST = async (request: Request) => {
   try {
     const user = await getCurrentUser();
@@ -110,11 +127,25 @@ export const POST = async (request: Request) => {
       );
     }
 
+    // Find employee record using authenticated userId
+    const employeesResponse = await serverApi.get<IEmployee[]>("/employees");
+
+    const employee = employeesResponse.data.find(
+      (emp) => emp.userId === user.userId && !emp.isDeleted,
+    );
+
+    if (!employee) {
+      return NextResponse.json(
+        { message: "Employee record not found" },
+        { status: 404 },
+      );
+    }
+
     const now = new Date().toISOString();
 
     const newLeave: ILeave = {
       id: crypto.randomUUID(),
-      employeeId: user.userId,
+      employeeId: employee.id,
       type,
       startDate,
       endDate,

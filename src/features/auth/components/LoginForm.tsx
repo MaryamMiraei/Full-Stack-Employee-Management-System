@@ -19,6 +19,17 @@ interface ILoginFormProps {
   role: UserRole;
 }
 
+const demoAccounts = {
+  admin: {
+    email: "admin@gmail.com",
+    password: "123456",
+  },
+  employee: {
+    email: "maryam@gmail.com",
+    password: "maryam123",
+  },
+};
+
 const LoginForm = ({ role }: ILoginFormProps) => {
   const [isShowPassword, setIsShowPassword] = useState(false);
 
@@ -40,8 +51,15 @@ const LoginForm = ({ role }: ILoginFormProps) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm<ILoginRequest>();
+  } = useForm<ILoginRequest>({
+    defaultValues: demoAccounts[role],
+  });
+
+  useEffect(() => {
+    reset(demoAccounts[role]);
+  }, [role, reset]);
 
   const { refreshSession } = useAuth();
 
@@ -64,7 +82,7 @@ const LoginForm = ({ role }: ILoginFormProps) => {
   return (
     <div className="w-full md:w-1/2 relative overflow-y-auto min-h-screen">
       <div className="p-5 flex justify-end">
-        <LanguageSwitcher />
+        {/* <LanguageSwitcher /> */}
       </div>
       <div
         className=" flex flex-col items-center justify-center p-2 sm:p-8 lg:p-12"

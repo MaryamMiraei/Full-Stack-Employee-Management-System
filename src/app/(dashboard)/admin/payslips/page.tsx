@@ -12,6 +12,7 @@ import { months } from "@/constants/months";
 import { formatCurrency } from "@/lib/utils/AUXFunctions";
 import { usePayslips } from "@/features/payslips/hooks/useGetPayslips";
 import type { IPayslipResponse } from "@/features/payslips/types/payslips.type";
+import { Plus } from "lucide-react";
 
 const AdminPayslipsPage = () => {
   const [addFormModal, setAddFormModal] = useState(false);
@@ -101,22 +102,8 @@ const AdminPayslipsPage = () => {
           </p>
         </div>
 
-        <Button onClick={() => setAddFormModal(true)}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M5 12h14" />
-            <path d="M12 5v14" />
-          </svg>
+        <Button onClick={() => setAddFormModal(true)} icon={<Plus size={16}/>}>
+          
           Generate Payslip
         </Button>
       </header>

@@ -1,3 +1,4 @@
+import AdminDashboardCard from "@/features/dashboard/components/AdminDashboardCard";
 
 const AdminDashboardPage = () => {
   return (
@@ -9,7 +10,7 @@ const AdminDashboardPage = () => {
         </p>
       </header>
       <main>
-        
+        <AdminDashboardCard/>
       </main>
     </div>
   );

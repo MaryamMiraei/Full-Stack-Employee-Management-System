@@ -135,9 +135,40 @@
       "startDate": "2026-11-19",
       "endDate": "2026-11-20",
       "reason": "سالگرد ازدواج سفر به کاشان",
-      "status": "PENDING",
+      "status": "APPROVED",
       "createdAt": "2026-11-18T11:14:33.644Z",
-      "updatedAt": "2026-11-18T11:14:33.644Z"
+      "updatedAt": "2026-11-21T07:16:25.482Z",
+      "adminComment": "",
+      "reviewedBy": "admin-user-id",
+      "reviewedAt": "2026-11-21T07:16:25.482Z"
+    }
+  ],
+  "attendances": [
+    {
+      "id": "a797b733-2dc0-4ad6-be83-22b00ad33647",
+      "employeeId": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",
+      "userId": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",
+      "date": "2026-11-19",
+      "checkIn": "2026-11-19T11:30:54.023Z",
+      "checkOut": "2026-11-19T11:35:17.257Z",
+      "workingMinutes": 4,
+      "dayType": "WORKDAY",
+      "status": "COMPLETED",
+      "createdAt": "2026-11-19T11:30:54.023Z",
+      "updatedAt": "2026-11-19T11:35:17.257Z"
+    },
+    {
+      "id": "f3134f16-6193-4819-9747-9f5ba047e4a7",
+      "employeeId": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",
+      "userId": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",
+      "date": "2026-11-21",
+      "checkIn": "2026-11-21T07:19:30.339Z",
+      "checkOut": null,
+      "workingMinutes": null,
+      "dayType": "WORKDAY",
+      "status": "IN_PROGRESS",
+      "createdAt": "2026-11-21T07:19:30.339Z",
+      "updatedAt": "2026-11-21T07:19:30.339Z"
     }
   ],
   "users": [
@@ -146,8 +177,8 @@
       "email": "admin@example.com",
       "passwordHash": "$2b$12$kLWPQ98GhS4Jb2PLR1Igl.s/HA1WVslsP07OJ/nCyy/6aUjPRatgu",
       "role": "admin",
-      "profileImage": null,
-      "avatarFileName": null
+      "profileImage": "/api/profile/avatar?v=1795245859411",
+      "avatarFileName": "ae7b7da1-5482-4393-bdf0-57ccd32e4a29.png"
     },
     {
       "id": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",

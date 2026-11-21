@@ -94,8 +94,7 @@ const EmployeePage = () => {
           <p className="text-sm text-gray-500">Manage your team members</p>
         </div>
 
-        <Button onClick={handleAddEmployee}>
-          <Plus size={16} />
+        <Button onClick={handleAddEmployee} icon={<Plus size={16} />}>
           Add Employee
         </Button>
       </header>
