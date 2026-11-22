@@ -84,7 +84,7 @@ const ProfilePage = () => {
         </div>
       )}
 
-      <ChangePasswordForm/>
+      <ChangePasswordForm />
     </div>
   );
 };

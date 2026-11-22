@@ -11,6 +11,7 @@ interface IProfileAvatarProps {
   profileImage: string | null;
   size?: "sm" | "md" | "lg";
   onFileSelect?: (file: File | null) => void;
+  allowUpload?: boolean;
 }
 
 const ProfileAvatar = ({
@@ -19,6 +20,7 @@ const ProfileAvatar = ({
   profileImage,
   size = "lg",
   onFileSelect,
+  allowUpload=true
 }: IProfileAvatarProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 

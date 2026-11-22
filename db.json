@@ -177,16 +177,16 @@
       "email": "admin@example.com",
       "passwordHash": "$2b$12$kLWPQ98GhS4Jb2PLR1Igl.s/HA1WVslsP07OJ/nCyy/6aUjPRatgu",
       "role": "admin",
-      "profileImage": "/api/profile/avatar?v=1795245859411",
-      "avatarFileName": "ae7b7da1-5482-4393-bdf0-57ccd32e4a29.png"
+      "profileImage": null,
+      "avatarFileName": null
     },
     {
       "id": "ca086c2c-9545-4bdd-81b5-0f35bb730f3c",
       "email": "maryam@example.com",
       "passwordHash": "$2b$10$wWz2hTEXsWwe2amgHxGtAet3x2kuCzDWfme0EUGDC8ZDbe/SImVI.",
       "role": "employee",
-      "profileImage": "/api/profile/avatar?v=1795015060724",
-      "avatarFileName": "d485d926-1d49-46e5-a9cd-319a433b7292.png"
+      "profileImage": null,
+      "avatarFileName": null
     },
     {
       "id": "70707207-fe63-4c24-b712-89e4e1ca677a",
