@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
@@ -14,8 +14,8 @@ const nextConfig: NextConfig = {
   experimental: {
     agentFeedback: true,
   },
-  cacheComponents: true,
-  partialPrefetching: true,
+  // cacheComponents: true,
+  // partialPrefetching: true,
   reactCompiler: true,
   turbopack: {
     rules: {
@@ -28,3 +28,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+initOpenNextCloudflareForDev();
