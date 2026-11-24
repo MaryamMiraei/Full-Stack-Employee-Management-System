@@ -14,4 +14,10 @@
       "service": "quick-esm-employee-management-system",
     },
   ],
+  "vars": {
+    "API_URL": "https://full-stack-employee-management-system.onrender.com",
+    "JWT_EXPIRES_IN": "24h",
+    "ATTENDANCE_TIME_ZONE": "Asia/Tehran",
+    "ATTENDANCE_START_TIME": "09:00",
+  },
 }
