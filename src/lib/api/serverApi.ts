@@ -16,6 +16,11 @@ serverApi.interceptors.request.use(async (config) => {
   if (cookieHeader) {
     config.headers.set("Cookie", cookieHeader);
   }
+  const apiKey = process.env.DEMO_API_KEY;
+
+  if (apiKey) {
+    config.headers.set("x-demo-api-key", apiKey);
+  }
 
   return config;
 });

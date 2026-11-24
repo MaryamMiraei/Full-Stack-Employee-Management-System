@@ -47,6 +47,13 @@ export const POST = async (request: Request) => {
     const user = users.find(
       (item) => item.email.toLowerCase() === email.trim().toLowerCase(),
     );
+    console.log("Login Debug:", {
+      email,
+      role_type,
+      userFound: !!user,
+      userRole: user?.role,
+      hasPasswordHash: !!user?.passwordHash,
+    });
 
     if (!user || user.role !== role_type) {
       return NextResponse.json(
@@ -55,7 +62,9 @@ export const POST = async (request: Request) => {
       );
     }
 
+
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+    console.log("Password valid:", isPasswordValid);
 
     if (!isPasswordValid) {
       return NextResponse.json(

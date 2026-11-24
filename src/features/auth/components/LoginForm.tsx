@@ -21,11 +21,11 @@ interface ILoginFormProps {
 
 const demoAccounts = {
   admin: {
-    email: "admin@gmail.com",
+    email: "admin@example.com",
     password: "123456",
   },
   employee: {
-    email: "maryam@gmail.com",
+    email: "maryam@example.com",
     password: "maryam123",
   },
 };

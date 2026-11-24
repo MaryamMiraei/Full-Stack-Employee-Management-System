@@ -14,35 +14,38 @@ export const proxy = async (request: NextRequest) => {
   const token = request.cookies.get("access_token")?.value;
   const user = token ? await verifyToken(token) : null;
 
-  const isLoginPage = pathname === LOGIN_PATH;
+  const isLoginRoute =
+    pathname === LOGIN_PATH || pathname.startsWith(`${LOGIN_PATH}/`);
+
   const isAdminRoute = pathname === "/admin" || pathname.startsWith("/admin/");
+
   const isEmployeeRoute =
     pathname === "/employee" || pathname.startsWith("/employee/");
 
-  // کاربر لاگین نکرده است
+  // User is not authenticated
   if (!user) {
-    if (isLoginPage) {
+    if (isLoginRoute) {
       return NextResponse.next();
     }
 
     return NextResponse.redirect(new URL(LOGIN_PATH, request.url));
   }
 
-  // کاربر لاگین کرده و صفحه Login را باز کرده است
-  if (isLoginPage || pathname === "/") {
+  // Authenticated user should not access login pages
+  if (isLoginRoute || pathname === "/") {
     return NextResponse.redirect(
       new URL(ROLE_DASHBOARDS[user.role], request.url),
     );
   }
 
-  // جلوگیری از ورود کارمند به صفحات ادمین
+  // Admin route protection
   if (isAdminRoute && user.role !== "admin") {
     return NextResponse.redirect(
       new URL(ROLE_DASHBOARDS[user.role], request.url),
     );
   }
 
-  // جلوگیری از ورود ادمین به صفحات کارمند
+  // Employee route protection
   if (isEmployeeRoute && user.role !== "employee") {
     return NextResponse.redirect(
       new URL(ROLE_DASHBOARDS[user.role], request.url),

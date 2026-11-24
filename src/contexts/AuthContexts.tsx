@@ -11,7 +11,6 @@ import axios from "axios";
 import { getSession } from "@/features/auth/api/session";
 import { logoutUser } from "@/features/auth/api/logout";
 
-
 interface IAuthContext {
   user: IUser | null;
   isLoading: boolean;
