@@ -1,5 +1,4 @@
 import "server-only";
-
 import { cookies } from "next/headers";
 import { getCloudflareContext } from "@opennextjs/cloudflare";
 import { createApiInstance } from "./axios";
