@@ -4,7 +4,6 @@ import React from "react";
 const LoginLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      {/* <Redirect /> */}
       <main className="auth-container flex">
         <LoginCover />
         {children}
