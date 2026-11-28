@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
-import { serverApi } from "@/lib/api/serverApi";
+import { getDB } from "@/lib/db";
 import { generateToken } from "@/lib/auth/token";
-
-// export const runtime = "nodejs";
 
 interface ILoginRequest {
   email: string;
@@ -15,10 +13,8 @@ interface ILoginRequest {
 interface IUser {
   id: string;
   email: string;
-  passwordHash: string;
+  password_hash: string;
   role: "admin" | "employee";
-  profileImage: string | null;
-  avatarFileName: string | null;
 }
 
 export const POST = async (request: Request) => {
@@ -38,22 +34,16 @@ export const POST = async (request: Request) => {
       );
     }
 
-    const response = await serverApi.get("/users", {
-      params: { email },
-    });
+    const db = getDB();
 
-    const users: IUser[] = response.data;
-
-    const user = users.find(
-      (item) => item.email.toLowerCase() === email.trim().toLowerCase(),
-    );
-    console.log("Login Debug:", {
-      email,
-      role_type,
-      userFound: !!user,
-      userRole: user?.role,
-      hasPasswordHash: !!user?.passwordHash,
-    });
+    const user = await db
+      .prepare(
+        `SELECT id, email, password_hash, role
+         FROM users
+         WHERE email = ?`,
+      )
+      .bind(email.trim())
+      .first<IUser>();
 
     if (!user || user.role !== role_type) {
       return NextResponse.json(
@@ -62,9 +52,7 @@ export const POST = async (request: Request) => {
       );
     }
 
-
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-    console.log("Password valid:", isPasswordValid);
+    const isPasswordValid = await bcrypt.compare(password, user.password_hash);
 
     if (!isPasswordValid) {
       return NextResponse.json(

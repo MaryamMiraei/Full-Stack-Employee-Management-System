@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
-import { serverApi } from "@/lib/api/serverApi";
+import { getDB } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/auth";
 
 interface IChangePasswordRequest {
@@ -24,20 +24,27 @@ export const POST = async (request: Request) => {
     }
 
     // 2. Validate request body
-    const body = await request.json().catch(() => null);
+    const body: unknown = await request.json().catch(() => null);
 
-    if (
-      !body ||
-      typeof body.currentPassword !== "string" ||
-      typeof body.newPassword !== "string"
-    ) {
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
       return NextResponse.json(
         { message: "Invalid request data" },
         { status: 400 },
       );
     }
 
-    const { currentPassword, newPassword } = body as IChangePasswordRequest;
+    const { currentPassword, newPassword } =
+      body as Partial<IChangePasswordRequest>;
+
+    if (
+      typeof currentPassword !== "string" ||
+      typeof newPassword !== "string"
+    ) {
+      return NextResponse.json(
+        { message: "Invalid request data" },
+        { status: 400 },
+      );
+    }
 
     if (!currentPassword || !newPassword) {
       return NextResponse.json(
@@ -53,21 +60,24 @@ export const POST = async (request: Request) => {
       );
     }
 
-    if (Buffer.byteLength(newPassword, "utf8") > 72) {
+    if (new TextEncoder().encode(newPassword).length > 72) {
       return NextResponse.json(
         { message: "New password is too long" },
         { status: 400 },
       );
     }
 
-    // 3. Get user from JSON Server
-    const userResponse = await serverApi.get<IUser[]>("/users", {
-      params: {
-        id: currentUser.userId,
-      },
-    });
+    // 3. Get user from D1
+    const db = getDB();
 
-    const user = userResponse.data[0];
+    const user = await db
+      .prepare(
+        `SELECT id, password_hash AS passwordHash
+         FROM users
+         WHERE id = ?`,
+      )
+      .bind(currentUser.userId)
+      .first<IUser>();
 
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
@@ -99,10 +109,15 @@ export const POST = async (request: Request) => {
     // 6. Hash new password
     const passwordHash = await bcrypt.hash(newPassword, 10);
 
-    // 7. Update password in JSON Server
-    await serverApi.patch(`/users/${user.id}`, {
-      passwordHash,
-    });
+    // 7. Update password in D1
+    await db
+      .prepare(
+        `UPDATE users
+         SET password_hash = ?
+         WHERE id = ?`,
+      )
+      .bind(passwordHash, user.id)
+      .run();
 
     return NextResponse.json(
       { message: "Password changed successfully" },

@@ -1,47 +1,73 @@
 import { NextResponse } from "next/server";
 
-import { serverApi } from "@/lib/api/serverApi";
+import { getDB } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/auth";
-
-
-import type { IAttendance } from "@/features/attendance/types/attendance.type";
 import { getLocalDate } from "@/lib/utils/attendance.utils";
 
 export const PATCH = async () => {
   try {
-    const user = await getCurrentUser();
+    // 1. Authentication
+    const currentUser = await getCurrentUser();
 
-    if (!user) {
+    if (!currentUser) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (user.role !== "employee") {
+    // 2. Authorization
+    if (currentUser.role !== "employee") {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
-    const date = getLocalDate();
+    const db = getDB();
 
-    const { data: attendances } = await serverApi.get<IAttendance[]>(
-      "/attendances",
-      {
-        params: {
-          userId: user.userId,
+    // 3. Get current local date
+    const now = new Date();
+    const today = getLocalDate(now);
+
+    // 4. Find active attendance
+    const attendance = await db
+      .prepare(
+        `SELECT
+          id,
+          employee_id AS employeeId,
+          user_id AS userId,
           date,
-          status: "IN_PROGRESS",
-        },
-      },
-    );
-
-    const attendance = attendances[0];
+          check_in AS checkIn,
+          check_out AS checkOut,
+          working_minutes AS workingMinutes,
+          day_type AS dayType,
+          status,
+          created_at AS createdAt,
+          updated_at AS updatedAt
+        FROM attendances
+        WHERE user_id = ?
+          AND date = ?
+          AND status = 'IN_PROGRESS'`,
+      )
+      .bind(currentUser.userId, today)
+      .first<{
+        id: string;
+        employeeId: string;
+        userId: string;
+        date: string;
+        checkIn: string;
+        checkOut: string | null;
+        workingMinutes: number | null;
+        dayType: "WORKDAY" | "WEEKEND" | "HOLIDAY";
+        status: "IN_PROGRESS" | "COMPLETED";
+        createdAt: string;
+        updatedAt: string;
+      }>();
 
     if (!attendance) {
       return NextResponse.json(
-        { message: "No active check-in found for today." },
+        { message: "No active check-in found for today" },
         { status: 404 },
       );
     }
 
-    const now = new Date();
+    // 5. Calculate working minutes
+    const checkOut = now.toISOString();
 
     const workingMinutes = Math.floor(
       (now.getTime() - new Date(attendance.checkIn).getTime()) / 60000,
@@ -49,25 +75,39 @@ export const PATCH = async () => {
 
     if (workingMinutes <= 0) {
       return NextResponse.json(
-        { message: "Invalid check-out time." },
+        { message: "Invalid check-out time" },
         { status: 400 },
       );
     }
 
-    const { data } = await serverApi.patch<IAttendance>(
-      `/attendances/${attendance.id}`,
-      {
-        checkOut: now.toISOString(),
-        workingMinutes,
-        status: "COMPLETED",
-        updatedAt: now.toISOString(),
-      },
-    );
+    // 6. Update attendance in D1
+    await db
+      .prepare(
+        `UPDATE attendances
+         SET
+           check_out = ?,
+           working_minutes = ?,
+           status = 'COMPLETED',
+           updated_at = ?
+         WHERE id = ?
+           AND status = 'IN_PROGRESS'`,
+      )
+      .bind(checkOut, workingMinutes, checkOut, attendance.id)
+      .run();
+
+    // 7. Return updated attendance
+    const updatedAttendance = {
+      ...attendance,
+      checkOut,
+      workingMinutes,
+      status: "COMPLETED" as const,
+      updatedAt: checkOut,
+    };
 
     return NextResponse.json(
       {
-        message: "Check-out successful.",
-        attendance: data,
+        message: "Check-out successful",
+        attendance: updatedAttendance,
       },
       { status: 200 },
     );

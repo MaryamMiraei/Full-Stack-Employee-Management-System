@@ -1,103 +1,51 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
 
-import { serverApi } from "@/lib/api/serverApi";
-import { verifyToken } from "@/lib/auth/token";
-import type { ILeave } from "@/features/leaves/types/leave.type";
+import { getDB } from "@/lib/db";
+import { getCurrentUser } from "@/lib/auth/auth";
 
+type LeaveType = "ANNUAL" | "SICK" | "UNPAID" | "CASUAL";
 
-
-interface IUserSession {
-  userId: string;
-  role: "admin" | "employee";
+interface ILeave {
+  type: LeaveType;
+  startDate: string;
+  endDate: string;
 }
-
-interface IEmployeeSource {
-  id: string;
-  userId?: string;
-}
-
-const getSession = async (): Promise<IUserSession | null> => {
-  try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("access_token")?.value;
-
-    if (!token) return null;
-
-    const session = await verifyToken(token);
-
-    if (!session) return null;
-
-    return session as IUserSession;
-  } catch {
-    return null;
-  }
-};
-
-// Calculate inclusive calendar days between two dates
-const getLeaveDays = (
-  startDate: string,
-  endDate: string,
-  year: number,
-): number => {
-  const start = new Date(`${startDate}T00:00:00.000Z`);
-  const end = new Date(`${endDate}T00:00:00.000Z`);
-
-  if (
-    Number.isNaN(start.getTime()) ||
-    Number.isNaN(end.getTime()) ||
-    start > end
-  ) {
-    return 0;
-  }
-
-  const yearStart = new Date(Date.UTC(year, 0, 1));
-  const yearEnd = new Date(Date.UTC(year + 1, 0, 1));
-
-  const effectiveStart = new Date(
-    Math.max(start.getTime(), yearStart.getTime()),
-  );
-
-  const effectiveEnd = new Date(
-    Math.min(end.getTime(), yearEnd.getTime() - 86400000),
-  );
-
-  if (effectiveStart > effectiveEnd) return 0;
-
-  return (
-    Math.floor((effectiveEnd.getTime() - effectiveStart.getTime()) / 86400000) +
-    1
-  );
-};
 
 export const GET = async (request: Request) => {
   try {
-    const session = await getSession();
+    // 1. Authentication
+    const currentUser = await getCurrentUser();
 
-    if (!session) {
+    if (!currentUser) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (session.role !== "employee") {
+    // 2. Authorization
+    if (currentUser.role !== "employee") {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
+    // 3. Validate year
     const { searchParams } = new URL(request.url);
     const yearParam = searchParams.get("year");
-
     const year = yearParam ? Number(yearParam) : new Date().getFullYear();
 
     if (!Number.isInteger(year) || year < 2000 || year > 2100) {
       return NextResponse.json({ message: "Invalid year" }, { status: 400 });
     }
 
-    // Find the employee linked to the logged-in user
-    const employeesResponse =
-      await serverApi.get<IEmployeeSource[]>("/employees");
+    // 4. Find employee
+    const db = getDB();
 
-    const employee = employeesResponse.data.find(
-      (item) => item.userId === session.userId || item.id === session.userId,
-    );
+    const employee = await db
+      .prepare(
+        `SELECT id
+         FROM employees
+         WHERE user_id = ?
+           AND is_deleted = 0`,
+      )
+      .bind(currentUser.userId)
+      .first<{ id: string }>();
 
     if (!employee) {
       return NextResponse.json(
@@ -106,40 +54,79 @@ export const GET = async (request: Request) => {
       );
     }
 
-    // Get only this employee's leave requests
-    const leavesResponse = await serverApi.get<ILeave[]>("/leaves");
+    // 5. Get approved leaves overlapping selected year
+    const yearStart = `${year}-01-01`;
+    const yearEnd = `${year}-12-31`;
 
-    const approvedLeaves = leavesResponse.data.filter(
-      (leave) =>
-        leave.employeeId === employee.id && leave.status === "APPROVED",
-    );
+    const result = await db
+      .prepare(
+        `SELECT
+          type,
+          start_date AS startDate,
+          end_date AS endDate
+         FROM leaves
+         WHERE employee_id = ?
+           AND status = 'APPROVED'
+           AND start_date <= ?
+           AND end_date >= ?`,
+      )
+      .bind(employee.id, yearEnd, yearStart)
+      .all<ILeave>();
 
-    const summary = {
-      year,
-      totalDays: 0,
-      byType: {
-        ANNUAL: 0,
-        SICK: 0,
-        UNPAID: 0,
-        CASUAL: 0,
-      },
+    // 6. Calculate leave days
+    const byType: Record<LeaveType, number> = {
+      ANNUAL: 0,
+      SICK: 0,
+      UNPAID: 0,
+      CASUAL: 0,
     };
 
-    approvedLeaves.forEach((leave) => {
-      const days = getLeaveDays(leave.startDate, leave.endDate, year);
+    for (const leave of result.results) {
+      const start = new Date(`${leave.startDate}T00:00:00Z`);
+      const end = new Date(`${leave.endDate}T00:00:00Z`);
 
-      if (days === 0) return;
+      const selectedYearStart = new Date(`${yearStart}T00:00:00Z`);
+      const selectedYearEnd = new Date(`${yearEnd}T00:00:00Z`);
 
-      summary.byType[leave.type] += days;
-      summary.totalDays += days;
-    });
+      const effectiveStart =
+        start > selectedYearStart ? start : selectedYearStart;
 
-    return NextResponse.json(summary, { status: 200 });
-  } catch (error) {
-    console.error("Get leave summary error:", error);
+      const effectiveEnd = end < selectedYearEnd ? end : selectedYearEnd;
+
+      const days =
+        Math.floor(
+          (effectiveEnd.getTime() - effectiveStart.getTime()) / 86400000,
+        ) + 1;
+
+      if (days > 0) {
+        byType[leave.type] += days;
+      }
+    }
+
+    // 7. Calculate total
+    const totalDays = Object.values(byType).reduce(
+      (total, days) => total + days,
+      0,
+    );
 
     return NextResponse.json(
-      { message: "Failed to get leave summary" },
+      {
+        year,
+        totalDays,
+        byType,
+      },
+      {
+        status: 200,
+        headers: {
+          "Cache-Control": "private, no-store",
+        },
+      },
+    );
+  } catch (error) {
+    console.error("Leave summary error:", error);
+
+    return NextResponse.json(
+      { message: "Failed to fetch leave summary" },
       { status: 500 },
     );
   }

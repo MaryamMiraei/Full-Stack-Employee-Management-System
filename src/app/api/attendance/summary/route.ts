@@ -1,72 +1,105 @@
 import { NextResponse } from "next/server";
 
-import { serverApi } from "@/lib/api/serverApi";
+import { getDB } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/auth";
-
-
-
-import type {
-  IAttendance,
-  IAttendanceSummary,
-} from "@/features/attendance/types/attendance.type";
 import { getCurrentMonth, isLateArrival } from "@/lib/utils/attendance.utils";
+
+interface IAttendance {
+  checkIn: string;
+  workingMinutes: number | null;
+}
 
 export const GET = async () => {
   try {
-    const user = await getCurrentUser();
+    // 1. Authentication
+    const currentUser = await getCurrentUser();
 
-    if (!user) {
+    if (!currentUser) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (user.role !== "employee") {
-      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+    // 2. Authorization
+    if (currentUser.role !== "employee") {
+      return NextResponse.json({ message: "Access denied" }, { status: 403 });
     }
 
-    const { data } = await serverApi.get<IAttendance[]>("/attendances");
+    const db = getDB();
 
+    // 3. Check employee record
+    const employee = await db
+      .prepare(
+        `SELECT id
+         FROM employees
+         WHERE user_id = ? AND is_deleted = 0`,
+      )
+      .bind(currentUser.userId)
+      .first<{ id: string }>();
+
+    if (!employee) {
+      return NextResponse.json(
+        { message: "Employee record not found" },
+        { status: 404 },
+      );
+    }
+
+    // 4. Get current month
     const currentMonth = getCurrentMonth();
 
-    const monthlyAttendances = data.filter(
-      (attendance) =>
-        attendance.userId === user.userId &&
-        attendance.date.startsWith(currentMonth),
-    );
+    // 5. Get monthly attendance records
+    const result = await db
+      .prepare(
+        `SELECT
+          check_in AS checkIn,
+          working_minutes AS workingMinutes
+         FROM attendances
+         WHERE user_id = ?
+           AND date LIKE ?`,
+      )
+      .bind(currentUser.userId, `${currentMonth}%`)
+      .all<IAttendance>();
+
+    const monthlyAttendances = result.results;
+
+    // 6. Calculate summary
+    const daysPresent = monthlyAttendances.length;
+
+    const lateArrivals = monthlyAttendances.filter((item) =>
+      isLateArrival(item.checkIn),
+    ).length;
 
     const completedAttendances = monthlyAttendances.filter(
-      (attendance) =>
-        attendance.status === "COMPLETED" && attendance.workingMinutes !== null,
+      (item) => item.workingMinutes !== null,
     );
 
-    const totalWorkingMinutes = completedAttendances.reduce(
-      (total, attendance) => total + (attendance.workingMinutes ?? 0),
+    const totalWorkMinutes = completedAttendances.reduce(
+      (total, item) => total + (item.workingMinutes ?? 0),
       0,
     );
 
-    const summary: IAttendanceSummary = {
-      daysPresent: monthlyAttendances.length,
+    const averageWorkMinutes =
+      completedAttendances.length > 0
+        ? Math.round(totalWorkMinutes / completedAttendances.length)
+        : 0;
 
-      lateArrivals: monthlyAttendances.filter((attendance) =>
-        isLateArrival(attendance.checkIn),
-      ).length,
-
-      averageWorkMinutes:
-        completedAttendances.length > 0
-          ? Math.round(totalWorkingMinutes / completedAttendances.length)
-          : 0,
-    };
-
-    return NextResponse.json(summary, {
-      status: 200,
-      headers: {
-        "Cache-Control": "private, no-store",
+    // 7. Return summary
+    return NextResponse.json(
+      {
+        daysPresent,
+        lateArrivals,
+        averageWorkMinutes,
       },
-    });
+      {
+        status: 200,
+        headers: {
+          "Cache-Control": "private, no-store",
+        },
+      },
+    );
   } catch (error) {
-    console.error("Get attendance summary error:", error);
+    console.error("Attendance summary error:", error);
 
     return NextResponse.json(
-      { message: "Failed to get attendance summary" },
+      { message: "Failed to fetch attendance summary" },
       { status: 500 },
     );
   }

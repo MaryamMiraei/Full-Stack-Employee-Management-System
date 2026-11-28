@@ -1,18 +1,11 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-
-import { serverApi } from "@/lib/api/serverApi";
-import type { ICreateEmployeeRequest } from "@/features/employees/types/employee.type";
-
 import { cookies } from "next/headers";
+
+import { getDB } from "@/lib/db";
 import { verifyToken } from "@/lib/auth/token";
 
-interface IUser {
-  id: string;
-  email: string;
-  passwordHash: string;
-  role: "admin" | "employee";
-}
+import type { ICreateEmployeeRequest } from "@/features/employees/types/employee.type";
 
 interface IEmployee {
   id: string;
@@ -35,9 +28,8 @@ interface IEmployee {
 }
 
 export const POST = async (request: Request) => {
-  let createdUser: IUser | null = null;
-
   try {
+    // 1. Authentication
     const cookieStore = await cookies();
     const token = cookieStore.get("access_token")?.value;
 
@@ -54,10 +46,12 @@ export const POST = async (request: Request) => {
       );
     }
 
+    // 2. Authorization
     if (session.role !== "admin") {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
+    // 3. Request body
     const body: ICreateEmployeeRequest = await request.json();
 
     const {
@@ -76,7 +70,7 @@ export const POST = async (request: Request) => {
       bio,
     } = body;
 
-    // Validate required fields
+    // 4. Validation
     if (
       typeof email !== "string" ||
       !email.trim() ||
@@ -104,12 +98,13 @@ export const POST = async (request: Request) => {
 
     const normalizedEmail = email.trim().toLowerCase();
 
-    // Check duplicate email
-    const usersResponse = await serverApi.get<IUser[]>("/users");
+    const db = getDB();
 
-    const existingUser = usersResponse.data.find(
-      (user) => user.email.toLowerCase() === normalizedEmail,
-    );
+    // 5. Check duplicate email
+    const existingUser = await db
+      .prepare("SELECT id FROM users WHERE email = ?")
+      .bind(normalizedEmail)
+      .first<{ id: string }>();
 
     if (existingUser) {
       return NextResponse.json(
@@ -118,25 +113,74 @@ export const POST = async (request: Request) => {
       );
     }
 
-    // Hash password
+    // 6. Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Create User
-    const userResponse = await serverApi.post<IUser>("/users", {
-      id: crypto.randomUUID(),
-      email: normalizedEmail,
-      passwordHash,
-      role: "employee",
-    });
-
-    createdUser = userResponse.data;
-
-    // Create Employee
+    // 7. Generate IDs and timestamps
+    const userId = crypto.randomUUID();
+    const employeeId = crypto.randomUUID();
     const now = new Date().toISOString();
 
-    const employeeResponse = await serverApi.post<IEmployee>("/employees", {
-      id: crypto.randomUUID(),
-      userId: createdUser.id,
+    // 8. Insert User and Employee atomically
+    await db.batch([
+      db
+        .prepare(
+          `INSERT INTO users (
+            id,
+            email,
+            password_hash,
+            role
+          ) VALUES (?, ?, ?, ?)`,
+        )
+        .bind(userId, normalizedEmail, passwordHash, "employee"),
+
+      db
+        .prepare(
+          `INSERT INTO employees (
+            id,
+            user_id,
+            first_name,
+            last_name,
+            email,
+            phone,
+            department,
+            position,
+            join_date,
+            employment_status,
+            basic_salary,
+            allowances,
+            deductions,
+            bio,
+            created_at,
+            updated_at,
+            is_deleted
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        )
+        .bind(
+          employeeId,
+          userId,
+          firstName.trim(),
+          lastName.trim(),
+          normalizedEmail,
+          phone,
+          department,
+          position,
+          joinDate,
+          employmentStatus,
+          basicSalary,
+          allowances,
+          deductions,
+          bio ?? "",
+          now,
+          now,
+          0,
+        ),
+    ]);
+
+    // 9. Response
+    const employee: IEmployee = {
+      id: employeeId,
+      userId,
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       email: normalizedEmail,
@@ -152,26 +196,17 @@ export const POST = async (request: Request) => {
       createdAt: now,
       updatedAt: now,
       isDeleted: false,
-    });
+    };
 
     return NextResponse.json(
       {
         message: "Employee created successfully",
-        employee: employeeResponse.data,
+        employee,
       },
       { status: 201 },
     );
   } catch (error) {
     console.error("Create employee error:", error);
-
-    // Roll back User if Employee creation failed
-    if (createdUser) {
-      try {
-        await serverApi.delete(`/users/${createdUser.id}`);
-      } catch (rollbackError) {
-        console.error("User rollback failed:", rollbackError);
-      }
-    }
 
     return NextResponse.json(
       { message: "Unable to create employee" },
@@ -196,22 +231,69 @@ export const GET = async (request: Request) => {
       return NextResponse.json({ message: "Invalid token" }, { status: 401 });
     }
 
-    // 2. Get department query parameter
+    // 2. Query parameters
     const { searchParams } = new URL(request.url);
     const department = searchParams.get("department");
 
-    // 3. Get employees from JSON Server
-    const response = await serverApi.get<IEmployee[]>("/employees");
+    const db = getDB();
 
-    // 4. Filter employees
-    const employees = response.data.filter((employee) => {
-      const isActive = !employee.isDeleted;
+    // 3. Get employees from D1
+    const query = department
+      ? db
+          .prepare(
+            `SELECT
+              id,
+              user_id AS userId,
+              first_name AS firstName,
+              last_name AS lastName,
+              email,
+              phone,
+              department,
+              position,
+              join_date AS joinDate,
+              employment_status AS employmentStatus,
+              basic_salary AS basicSalary,
+              allowances,
+              deductions,
+              bio,
+              created_at AS createdAt,
+              updated_at AS updatedAt,
+              is_deleted AS isDeleted
+            FROM employees
+            WHERE is_deleted = 0
+              AND department = ?`,
+          )
+          .bind(department)
+      : db.prepare(
+          `SELECT
+              id,
+              user_id AS userId,
+              first_name AS firstName,
+              last_name AS lastName,
+              email,
+              phone,
+              department,
+              position,
+              join_date AS joinDate,
+              employment_status AS employmentStatus,
+              basic_salary AS basicSalary,
+              allowances,
+              deductions,
+              bio,
+              created_at AS createdAt,
+              updated_at AS updatedAt,
+              is_deleted AS isDeleted
+            FROM employees
+            WHERE is_deleted = 0`,
+        );
 
-      const matchesDepartment =
-        !department || employee.department === department;
+    const result = await query.all<IEmployee>();
 
-      return isActive && matchesDepartment;
-    });
+    // 4. Response
+    const employees = result.results.map((employee) => ({
+      ...employee,
+      isDeleted: Boolean(employee.isDeleted),
+    }));
 
     return NextResponse.json(employees, { status: 200 });
   } catch (error) {

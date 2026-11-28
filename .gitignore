@@ -52,3 +52,5 @@ db.runtime.json
 # Cloudflare & OpenNext generated files
 .open-next/
 .wrangler/
+
+seed-data.sql

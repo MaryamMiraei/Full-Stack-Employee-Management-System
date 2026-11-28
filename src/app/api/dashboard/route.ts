@@ -1,70 +1,73 @@
 import { NextResponse } from "next/server";
 
-import { serverApi } from "@/lib/api/serverApi";
+import { getDB } from "@/lib/db";
 import { getCurrentUser } from "@/lib/auth/auth";
-
-import type { IEmployee } from "@/features/employees/types/employee.type";
-import type { IAttendance } from "@/features/attendance/types/attendance.type";
-import type { ILeave } from "@/features/leaves/types/leave.type";
+import { getLocalDate } from "@/lib/utils/attendance.utils";
 
 export const GET = async () => {
   try {
-    const user = await getCurrentUser();
+    // 1. Authentication
+    const currentUser = await getCurrentUser();
 
-    if (!user) {
+    if (!currentUser) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    if (user.role !== "admin") {
+    // 2. Authorization
+    if (currentUser.role !== "admin") {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
-    // Fetch dashboard data simultaneously
-    const [employeesResponse, attendanceResponse, leavesResponse] =
+    // 3. Get D1 database
+    const db = getDB();
+    const today = getLocalDate();
+
+    // 4. Fetch dashboard statistics
+    const [employeesResult, departmentsResult, attendanceResult, leavesResult] =
       await Promise.all([
-        serverApi.get<IEmployee[]>("/employees"),
-        serverApi.get<IAttendance[]>("/attendances"),
-        serverApi.get<ILeave[]>("/leaves"),
+        db
+          .prepare(
+            `SELECT COUNT(*) AS totalEmployees
+           FROM employees
+           WHERE is_deleted = 0`,
+          )
+          .first<{ totalEmployees: number }>(),
+
+        db
+          .prepare(
+            `SELECT COUNT(DISTINCT TRIM(department)) AS totalDepartments
+           FROM employees
+           WHERE is_deleted = 0
+             AND department IS NOT NULL
+             AND TRIM(department) != ''`,
+          )
+          .first<{ totalDepartments: number }>(),
+
+        db
+          .prepare(
+            `SELECT COUNT(*) AS todayAttendance
+           FROM attendances
+           WHERE date = ?`,
+          )
+          .bind(today)
+          .first<{ todayAttendance: number }>(),
+
+        db
+          .prepare(
+            `SELECT COUNT(*) AS pendingLeaves
+           FROM leaves
+           WHERE status = 'PENDING'`,
+          )
+          .first<{ pendingLeaves: number }>(),
       ]);
 
-    const employees = employeesResponse.data;
-    const attendances = attendanceResponse.data;
-    const leaves = leavesResponse.data;
-
-    // Active employees
-    const activeEmployees = employees.filter((employee) => !employee.isDeleted);
-
-    // Unique departments
-    const departments = new Set(
-      activeEmployees
-        .map((employee) => employee.department?.trim())
-        .filter((department) => department),
-    );
-
-    // Today's date in configured timezone
-    const today = new Intl.DateTimeFormat("en-CA", {
-      timeZone: process.env.ATTENDANCE_TIME_ZONE || "Asia/Tehran",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).format(new Date());
-
-    // Today's attendance
-    const todayAttendance = attendances.filter(
-      (attendance) => attendance.date === today,
-    ).length;
-
-    // Pending leave requests
-    const pendingLeaves = leaves.filter(
-      (leave) => leave.status === "PENDING",
-    ).length;
-
+    // 5. Return response
     return NextResponse.json(
       {
-        totalEmployees: activeEmployees.length,
-        totalDepartments: departments.size,
-        todayAttendance,
-        pendingLeaves,
+        totalEmployees: employeesResult?.totalEmployees ?? 0,
+        totalDepartments: departmentsResult?.totalDepartments ?? 0,
+        todayAttendance: attendanceResult?.todayAttendance ?? 0,
+        pendingLeaves: leavesResult?.pendingLeaves ?? 0,
       },
       {
         status: 200,
@@ -74,10 +77,10 @@ export const GET = async () => {
       },
     );
   } catch (error) {
-    console.error("Get admin dashboard stats error:", error);
+    console.error("Dashboard API error:", error);
 
     return NextResponse.json(
-      { message: "Failed to get dashboard statistics" },
+      { message: "Failed to load dashboard data" },
       { status: 500 },
     );
   }
